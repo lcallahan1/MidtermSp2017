@@ -29,6 +29,10 @@ string happyResponse();
 //main only used to initiate the first menu function
 int main()
 {
+	// Seed random number generator
+	unsigned seed = time(0);
+	srand(seed);
+
 	studentTeacher();
 	return 0;
 }
@@ -219,9 +223,7 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 	level = 1;
 	negatives = 0;
 
-	int num1 = randNum(level, negatives);
-	int num2 = randNum(level, negatives);
-	int answer = (num1 + num2);
+	int answer;
 
 	int quotient;
 	int remainder;
@@ -230,6 +232,8 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 
 		for (questions = 0; questions < 10; questions++)
 		{
+			int num1 = randNum(level, negatives);
+			int num2 = randNum(level, negatives);
 			//display equation
 			cout << num1 << " " << mathType << " " << num2 << "  =  " << endl;
 
@@ -268,7 +272,7 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 				cin >> quotient;
 				cout << "and remainder:  ";
 				cin >> remainder;
-				if ((quotient == (num1 / num2)) && (remainder = (num1 % num2))) //using && right?
+				if ((quotient == (num1 / num2)) && (remainder == (num1 % num2))) //using && right?
 					cout << happyResponse() << endl << endl;
 				//also need remainder (num1 % num2 = remainder)
 				else
@@ -288,12 +292,6 @@ int randNum(int level, bool negatives)
 {
 	int magnitude = pow(10, level); 
 	int num;
-
-	//need system time
-	unsigned seed = time(0);
-
-	//then seed the RMG
-	srand(seed);
 
 	num = rand() % magnitude;
 
