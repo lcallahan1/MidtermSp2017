@@ -21,12 +21,13 @@ void operatorMenu(string name);
 void levelMenu(string name, int mathType);
 void quiz(char mathType, int &score);
 int randNum(int magnitude, bool negatives);
+int randNum(int min, int max);
 string crappyResponse();
 string happyResponse();
 
 
 
-//main only used to initiate the first menu function
+//main only used to initiate the first menu function adn to seed RNG
 int main()
 {
 	// Seed random number generator
@@ -173,7 +174,8 @@ void operatorMenu(string name)
 		<< "1. Addition (levels 1-4)" << endl
 		<< "2. Subtraction (levels 1-4)" << endl
 		<< "3. Multiplication (levels 1-4)" << endl
-		<< "4. Division (levels 1-4)" << endl;
+		<< "4. Division (levels 1-4)" << endl
+		<< "5. Combination of all operators and levels" << endl << endl;
 
 	cin >> choice;
 	switch (choice)
@@ -190,8 +192,10 @@ void operatorMenu(string name)
 	case 4:
 		levelMenu(name, '/');
 		break;
+	case 5:
+		levelMenu(name, 'C');
 	default:
-		cout << "Please enter a valid selection, 1-4.";
+		cout << "Please enter a valid selection, 1-5.";
 	}
 }
 
@@ -235,17 +239,17 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 			int num1 = randNum(level, negatives);
 			int num2 = randNum(level, negatives);
 			//display equation
-			cout << num1 << " " << mathType << " " << num2 << "  =  " << endl;
+			cout << endl << num1 << " " << mathType << " " << num2 << "  =  " << endl;
 
 			switch (mathType)
 			{
 			case '+':
 				cin >> answer;
 				if (answer == (num1 + num2))
-					cout << happyResponse() << endl;
+					cout << happyResponse() << endl << endl;
 				else
 					cout << "Incorrect. The answer is " << (num1 + num2) << "." << endl
-					     << crappyResponse() << endl;
+					<< crappyResponse() << endl << endl;
 		
 				//prompt for answer
 				//if correct
@@ -254,32 +258,39 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 			case '-':
 				cin >> answer;
 				if (answer == (num1 - num2))
-					cout << happyResponse() << endl;
+					cout << happyResponse() << endl << endl;
 				else
 					cout << "Incorrect. The answer is " << (num1 - num2) << "." << endl
-					<< crappyResponse() << endl;
+					<< crappyResponse() << endl << endl;
 				break;
 			case '*':
 				cin >> answer;
 				if (answer == (num1 * num2))
-					cout << happyResponse() << endl;
+					cout << happyResponse() << endl << endl;
 				else
 					cout << "Incorrect. The answer is " << (num1 * num2) << "." << endl
-					<< crappyResponse() << endl;
+					<< crappyResponse() << endl << endl;
 				break;
 			case '/':
+				if (num2 == 0)
+					num2 += 1;
 				cout << "please enter quotient (without remainder):  ";
 				cin >> quotient;
 				cout << "and remainder:  ";
 				cin >> remainder;
-				if ((quotient == (num1 / num2)) && (remainder == (num1 % num2))) //using && right?
+				if ((quotient == (num1 / num2)) && (remainder == (num1 % num2)))
 					cout << happyResponse() << endl << endl;
-				//also need remainder (num1 % num2 = remainder)
 				else
-					cout << crappyResponse() << endl << endl;
+					cout << "Incorrect. The answer is " << (num1 / num2) << " with R = " << (num1 % num2) << "." << endl
+					     << crappyResponse() << endl << endl;
+				break;
+			case 'C':
+				//cin >> answer
+				//how to randomize this?
+				//how to deal with quotients again?
 				break;
 			}
-			//want this to return back to levelMenu, not studentTeacher (main menu) *****
+			//want this to return back to levelMenu, not studentTeacher BUT*** Instructions say to reset for next student, so fine.
 		}
 
 	/*if (answer == (num1 + num2))
@@ -298,22 +309,63 @@ int randNum(int level, bool negatives)
 	return num;
 }
 
-string happyResponse()
+int randNum(int min, int max) 
 {
-	string response1;
+	int x = (rand() % (max - min + 1)) + min;
+	return x;
+}
 
-	response1 = "Correct, great job!";
-	//need randomly generated response from list
-	return response1;
-	
+string happyResponse()
+//generate random response
+{
+	//srand up top
+	const int MIN_SIZE = 0;
+	const int MAX_SIZE = 9;
+	string response;
+	string responses[10]; //negative responses will be in diff scope, so reuse variable
+	responses[0] = "Correct!";
+	responses[1] = "Great job!";
+	responses[2] = "Cool beans!";
+	responses[3] = "Correct-o-mundo!";
+	responses[4] = "Cowabunga, dude!";
+	responses[5] = "Smashing!";
+	responses[6] = "Super-duper!";
+	responses[7] = "Someone had their milk this morning!";
+	responses[8] = "Awesome, keep it up!";
+	responses[9] = "Bingo!";
+ 
 
+	//generate an index for array
+	int index = randNum(MIN_SIZE, MAX_SIZE);  //initializing index for array
+	response = responses[index];
+
+	return response;
 }
 
 string crappyResponse()
 {
-	//need randomly generated from list
-	return "Let's try another!";
-	//either way works
+	const int MIN_SIZE = 0;
+	const int MAX_SIZE = 9;
+	string response;
+	string responses[10]; //pos responses in diff scope, so reusing variable
+	responses[0] = "Bummer, dude!";
+	responses[1] = "Oops! Try again";
+	responses[2] = "Bullocks!";
+	responses[3] = "Mmm...Let's try another.";
+	responses[4] = "Drat!";
+	responses[5] = "False!";
+	responses[6] = "Sorry, that's incorrect.";
+	responses[7] = "Scat!";
+	responses[8] = "Oh, no!";
+	responses[9] = "Whoops! Keep trying.";
+
+
+	//generate an index for array
+	int index = randNum(MIN_SIZE, MAX_SIZE);  //initializing index for array
+	response = responses[index];
+
+	return response;
+
 }
 /*
 //array for level score keeping
@@ -322,3 +374,13 @@ int scores[LEVELS]; //array has 8 elements
 ofstream outputFile;
 
 */
+
+//******************************************
+//TO DO:
+// - negative numbers for B levels
+// - level 2-4 need to include smaller numbers from prev level
+// - array to store scores and levels
+// - display availble levels
+// - option for mix of all operators
+// - calc % answered correctly
+//******************************************
