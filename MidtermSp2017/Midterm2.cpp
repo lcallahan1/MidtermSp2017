@@ -119,7 +119,7 @@ void teacherSettings()//instructor settings
 	}
 	if (choice == 1)
 	{
-		string percentage = readFile("storage/passing_percentage.txt");//read in percentage from file where it's stored
+		string percentage = readFile("storage/passing_percentage.txt");//read in percentage from file where it's stored as a string only
 		cout << "The current percentage is " << percentage << "%, to what would you like to change the passing percentage?" << endl;
 		cin >> percentage;
 		cout << "The new percentage required to pass a level is " << percentage << "%." << endl; //display new percentage
@@ -228,11 +228,13 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 	negatives = 0;
 
 	int answer;
-
+	//answer == (num1 mathType num2);
 	int quotient;
 	int remainder;
 
 	int questions;
+	int correctCount = 0;
+	
 
 		for (questions = 0; questions < 10; questions++)
 		{
@@ -246,7 +248,10 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 			case '+':
 				cin >> answer;
 				if (answer == (num1 + num2))
-					cout << happyResponse() << endl << endl;
+				{
+					correctCount++;
+				cout << happyResponse() << endl << endl;
+				}
 				else
 					cout << "Incorrect. The answer is " << (num1 + num2) << "." << endl
 					<< crappyResponse() << endl << endl;
@@ -291,7 +296,12 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 				break;
 			}
 			//want this to return back to levelMenu, not studentTeacher BUT*** Instructions say to reset for next student, so fine.
+			//calculate percentage correct after these 10 problems
+			int score;
+			// int score = () need to define correct answer so I can use it
+			cout << (correctCount * 10);
 		}
+		//want this to return back to levelMenu, not studentTeacher BUT*** Instructions say to reset for next student, so fine.
 
 	/*if (answer == (num1 + num2))
 	cout << "Correct!" << endl;
@@ -378,9 +388,41 @@ ofstream outputFile;
 //******************************************
 //TO DO:
 // - negative numbers for B levels
-// - level 2-4 need to include smaller numbers from prev level
 // - array to store scores and levels
 // - display availble levels
 // - option for mix of all operators
 // - calc % answered correctly
+// - determine if new user and create file, or read from existing
 //******************************************
+
+/*
+ifstream fin; 
+ofstream fout;
+string first, last, filename; 
+int level;
+cout << " enter first name" << endl; 
+cin >> first; cout << " enter last name" << endl; 
+cin >> last;
+// build the filename with the individual's name 
+filename = first+"_"+last+"_math.txt";
+// try to open the file 
+fin.open(filename);
+if (!fin)  // file didn't exist  !fin means that my input stream is not set up - the file didn't open
+{
+	// new student // initialize variables for beginning (level 0 etc...) 
+	level = 0; cout <<" hi " << first << ". Let's get started!" << endl;
+}
+else  // the file opened I can read the data from it 
+{
+fin >> level; cout << "welcome back " << first << " you were on level: " << level
+<< "." << endl;
+fin.close();  // make sure you close the file
+} // later in the program I can open the file to write out the newly achieved level
+level = 3;  // just an example of a changed level 
+fout.open(filename);  // opening the same file for output will wipe out the existing one or
+// if there never was one with create a new output file
+// I need to write all the data I want to save in the file out to it 
+fout << level; 
+fout.close();
+return 0;
+*/
