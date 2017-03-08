@@ -249,7 +249,7 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 
 			if (answer == (num1 + num2)) //if correct
 			{
-				correctCount++; //only working for addition?!
+				correctCount++; 
 				cout << happyResponse() << endl << endl;
 			}
 			else // or incorrect (could probably do this outside switch statement
@@ -300,9 +300,7 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 			//how to deal with quotients again?
 			break;
 		}
-		//calculate percentage correct after these 10 problems
-		//int score;
-		// int score = () need to define correct answer so I can use it
+	
 
 	}
 	inFile.open("storage/passing_percentage.txt"); //open percentage file
@@ -310,16 +308,15 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 	inFile.close();
 
 
-	if (correctCount * 10 >= percentage) //this part is (incorrectly) always true due to not reading the proper file.
+	if (correctCount * 10 >= percentage)
 	{
-		cout << percentage;
 		//int percentage = readFile("storage/passing_percentage.txt"); //read in current passing percentage from file where it's stored
 		cout << "Your score is " << (correctCount * 10) << "%. " << " Congratulations, you are ready to move on to the next level!" << endl << endl;
 		//displays total score
 	}
 	else
 	{
-		cout << "Your score is " << (correctCount * 10) << "%." << "Please see your teacher for some extra help." << endl << endl;
+		cout << "Your score is " << (correctCount * 10) << "%." << " Please see your teacher for some extra help." << endl << endl;
 	}
 }
 
@@ -402,10 +399,7 @@ ofstream outputFile;
 //TO DO:
 // - negative numbers for B levels
 // - array to store scores and levels
-// - display available levels
+// - display available levels    
 // - option for mix of all operators
 // - determine if new user and create file, or read from existing
-// - convert percentage from string to int for comparison
-// - not connecting to storage file anymore...
-// - correctCount++ only displaying correct score for addition.
 //******************************************
