@@ -165,17 +165,17 @@ void studentMenu()
 
 void operatorMenu(string name)
 {
-	int choice; //options 1-4 (easier than char or string)
+	int choice; //options 1-5 (easier than char or string)
 
 
 	cout << "Student Menu" << endl
 		<< "______________" << endl << endl
 		<< "Please enter an option from the following: " << endl << endl
-		<< "1. Addition (levels 1-4)" << endl
-		<< "2. Subtraction (levels 1-4)" << endl
-		<< "3. Multiplication (levels 1-4)" << endl
-		<< "4. Division (levels 1-4)" << endl
-		<< "5. Combination of all operators and levels" << endl << endl;
+		<< "1. Addition (levels 1-5)" << endl
+		<< "2. Subtraction (levels 1-5)" << endl
+		<< "3. Multiplication (levels 1-5)" << endl
+		<< "4. Division (levels 1-5)" << endl
+		<< "5. Combination of all operators (levels 1-5)" << endl << endl;
 
 	cin >> choice;
 	switch (choice)
@@ -215,103 +215,117 @@ void levelMenu(string name, int mathType)
 		quiz(mathType, levels[0]);
 		break;
 
-
 	}
 }
 
 void quiz(char mathType, int &score) //char mathType here because we are pulling in the paramenter from operatorMenu
-//passing scores in the array as a reference 
+									 //passing scores in the array as a reference 
 {
 	int level;
 	bool negatives;
 	level = 1;
 	negatives = 0;
-
 	int answer;
 	//answer == (num1 mathType num2);
 	int quotient;
 	int remainder;
-
 	int questions;
 	int correctCount = 0;
-	
 
-		for (questions = 0; questions < 10; questions++)
+	ifstream inFile;
+	int percentage; //need to convert percentage from string (in file) to int for math
+
+	for (questions = 0; questions < 10; questions++) //display 10 questions
+	{
+		int num1 = randNum(level, negatives);
+		int num2 = randNum(level, negatives);
+
+		cout << endl << num1 << " " << mathType << " " << num2 << "  =  "; //display equation and prompt for answer
+
+		switch (mathType)
 		{
-			int num1 = randNum(level, negatives);
-			int num2 = randNum(level, negatives);
-			//display equation
-			cout << endl << num1 << " " << mathType << " " << num2 << "  =  " << endl;
+		case '+':
+			cin >> answer;
 
-			switch (mathType)
+			if (answer == (num1 + num2)) //if correct
 			{
-			case '+':
-				cin >> answer;
-				if (answer == (num1 + num2))
-				{
-					correctCount++;
+				correctCount++; //only working for addition?!
 				cout << happyResponse() << endl << endl;
-				}
-				else
-					cout << "Incorrect. The answer is " << (num1 + num2) << "." << endl
-					<< crappyResponse() << endl << endl;
-		
-				//prompt for answer
-				//if correct
-				//else incorrect  (or outside switch)
-				break;
-			case '-':
-				cin >> answer;
-				if (answer == (num1 - num2))
-					cout << happyResponse() << endl << endl;
-				else
-					cout << "Incorrect. The answer is " << (num1 - num2) << "." << endl
-					<< crappyResponse() << endl << endl;
-				break;
-			case '*':
-				cin >> answer;
-				if (answer == (num1 * num2))
-					cout << happyResponse() << endl << endl;
-				else
-					cout << "Incorrect. The answer is " << (num1 * num2) << "." << endl
-					<< crappyResponse() << endl << endl;
-				break;
-			case '/':
-				if (num2 == 0)
-					num2 += 1;
-				cout << "please enter quotient (without remainder):  ";
-				cin >> quotient;
-				cout << "and remainder:  ";
-				cin >> remainder;
-				if ((quotient == (num1 / num2)) && (remainder == (num1 % num2)))
-					cout << happyResponse() << endl << endl;
-				else
-					cout << "Incorrect. The answer is " << (num1 / num2) << " with R = " << (num1 % num2) << "." << endl
-					     << crappyResponse() << endl << endl;
-				break;
-			case 'C':
-				//cin >> answer
-				//how to randomize this?
-				//how to deal with quotients again?
-				break;
 			}
-			//want this to return back to levelMenu, not studentTeacher BUT*** Instructions say to reset for next student, so fine.
-			//calculate percentage correct after these 10 problems
-			int score;
-			// int score = () need to define correct answer so I can use it
-			cout << (correctCount * 10);
+			else // or incorrect (could probably do this outside switch statement
+				cout << "Incorrect. The answer is " << (num1 + num2) << "." << endl
+				<< crappyResponse() << endl << endl;
+			break;
+		case '-':
+			cin >> answer;
+			if (answer == (num1 - num2))
+			{
+				correctCount++;
+				cout << happyResponse() << endl << endl;
+			}
+			else
+				cout << "Incorrect. The answer is " << (num1 - num2) << "." << endl
+				<< crappyResponse() << endl << endl;
+			break;
+		case '*':
+			cin >> answer;
+			if (answer == (num1 * num2))
+			{
+				correctCount++;
+				cout << happyResponse() << endl << endl;
+			}
+			else
+				cout << "Incorrect. The answer is " << (num1 * num2) << "." << endl
+				<< crappyResponse() << endl << endl;
+			break;
+		case '/':
+			if (num2 == 0)
+				num2 += 1;
+			cout << "please enter quotient (without remainder):  ";
+			cin >> quotient;
+			cout << "and remainder:  ";
+			cin >> remainder;
+			if ((quotient == (num1 / num2)) && (remainder == (num1 % num2)))
+			{
+				correctCount++;
+				cout << happyResponse() << endl << endl;
+			}
+			else
+				cout << "Incorrect. The answer is " << (num1 / num2) << " with R = " << (num1 % num2) << "." << endl
+				<< crappyResponse() << endl << endl;
+			break;
+		case 'C':
+			//cin >> answer
+			//how to randomize this?
+			//how to deal with quotients again?
+			break;
 		}
-		//want this to return back to levelMenu, not studentTeacher BUT*** Instructions say to reset for next student, so fine.
+		//calculate percentage correct after these 10 problems
+		//int score;
+		// int score = () need to define correct answer so I can use it
 
-	/*if (answer == (num1 + num2))
-	cout << "Correct!" << endl;
+	}
+	inFile.open("storage/passing_percentage.txt"); //open percentage file
+	inFile >> percentage; //read in current passing percentage from file where it's stored
+	inFile.close();
+
+
+	if (correctCount * 10 >= percentage) //this part is (incorrectly) always true due to not reading the proper file.
+	{
+		cout << percentage;
+		//int percentage = readFile("storage/passing_percentage.txt"); //read in current passing percentage from file where it's stored
+		cout << "Your score is " << (correctCount * 10) << "%. " << " Congratulations, you are ready to move on to the next level!" << endl << endl;
+		//displays total score
+	}
 	else
-	cout << "Incorrect. The answer is " << (num1 + num2) << "." << endl;*/
+	{
+		cout << "Your score is " << (correctCount * 10) << "%." << "Please see your teacher for some extra help." << endl << endl;
+	}
 }
 
 int randNum(int level, bool negatives)
 {
-	int magnitude = pow(10, level); 
+	int magnitude = pow(10, level); //magnitude for multiple digits according to level
 	int num;
 
 	num = rand() % magnitude;
@@ -319,7 +333,7 @@ int randNum(int level, bool negatives)
 	return num;
 }
 
-int randNum(int min, int max) 
+int randNum(int min, int max)
 {
 	int x = (rand() % (max - min + 1)) + min;
 	return x;
@@ -343,7 +357,7 @@ string happyResponse()
 	responses[7] = "Someone had their milk this morning!";
 	responses[8] = "Awesome, keep it up!";
 	responses[9] = "Bingo!";
- 
+
 
 	//generate an index for array
 	int index = randNum(MIN_SIZE, MAX_SIZE);  //initializing index for array
@@ -357,7 +371,7 @@ string crappyResponse()
 	const int MIN_SIZE = 0;
 	const int MAX_SIZE = 9;
 	string response;
-	string responses[10]; //pos responses in diff scope, so reusing variable
+	string responses[10]; //positive responses in diff scope, so reusing variable
 	responses[0] = "Bummer, dude!";
 	responses[1] = "Oops! Try again";
 	responses[2] = "Bullocks!";
@@ -375,7 +389,6 @@ string crappyResponse()
 	response = responses[index];
 
 	return response;
-
 }
 /*
 //array for level score keeping
@@ -389,40 +402,10 @@ ofstream outputFile;
 //TO DO:
 // - negative numbers for B levels
 // - array to store scores and levels
-// - display availble levels
+// - display available levels
 // - option for mix of all operators
-// - calc % answered correctly
 // - determine if new user and create file, or read from existing
+// - convert percentage from string to int for comparison
+// - not connecting to storage file anymore...
+// - correctCount++ only displaying correct score for addition.
 //******************************************
-
-/*
-ifstream fin; 
-ofstream fout;
-string first, last, filename; 
-int level;
-cout << " enter first name" << endl; 
-cin >> first; cout << " enter last name" << endl; 
-cin >> last;
-// build the filename with the individual's name 
-filename = first+"_"+last+"_math.txt";
-// try to open the file 
-fin.open(filename);
-if (!fin)  // file didn't exist  !fin means that my input stream is not set up - the file didn't open
-{
-	// new student // initialize variables for beginning (level 0 etc...) 
-	level = 0; cout <<" hi " << first << ". Let's get started!" << endl;
-}
-else  // the file opened I can read the data from it 
-{
-fin >> level; cout << "welcome back " << first << " you were on level: " << level
-<< "." << endl;
-fin.close();  // make sure you close the file
-} // later in the program I can open the file to write out the newly achieved level
-level = 3;  // just an example of a changed level 
-fout.open(filename);  // opening the same file for output will wipe out the existing one or
-// if there never was one with create a new output file
-// I need to write all the data I want to save in the file out to it 
-fout << level; 
-fout.close();
-return 0;
-*/
