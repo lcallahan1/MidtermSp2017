@@ -16,9 +16,10 @@ void teacherMenu(int attempts); // If teacher, user is prompted for password (ma
 void studentMenu(); // Prompts student for name, to access file for scores and such.
 void teacherSettings(); // Option to change the percentage required for passing.
 void writeFile(string filepath, string info); // function to write to file (used for percentage and scores)
+void writeFile(string filepath, int scores[], int length);
 string readFile(string filepath); // function to read info from file (same)
 void operatorMenu(string name); // Menu for which to choose the operator (+, -, *, / or combo), uses student name (string).
-void levelMenu(string name, int mathType);//Choose from available levels (1 plus any unlocked levels), uses student name and mathtyye from operator menu.
+void levelMenu(string name, char mathType, string mathPath);//Choose from available levels (1 plus any unlocked levels), uses student name and mathtyye from operator menu.
 void quiz(char mathType, int &score); // Runs math quiz of appropriate operator, level and saves score in name file.
 int randNum(int magnitude, bool negatives); //generates random number, proper number of digits and negative for B levels
 int randNum(int min, int max); //same function, diff parameters, uses same min and max from previous
@@ -120,6 +121,8 @@ void teacherSettings()//instructor settings
 //******************
 // FILE I/O
 //******************
+
+
 void writeFile(string filepath, string info)
 {
 	ofstream outputFile; //declare 
@@ -127,6 +130,17 @@ void writeFile(string filepath, string info)
 	outputFile << info; //output the new info to file
 	outputFile.close(); //close file
 	return;
+}
+
+void writeFile(string filepath, int scores[], int length)
+{
+	ofstream outputFile;
+	outputFile.open(filepath);
+	for (int index = 0; index < length; index++)
+	{
+		outputFile << scores[index] << endl;
+	}
+	outputFile.close();
 }
 
 string readFile(string filepath)
@@ -141,12 +155,12 @@ string readFile(string filepath)
 
 void studentMenu()
 {
-	ofstream outputFile;
+	//ofstream outputFile;
 
 	string name;
 	cout << "Please enter your name with no spaces and all lowercase [first_last]: " << endl;
 	cin >> name;
-	outputFile.open("storage/users/" + name); //how to incorporate name as variable with the filestream
+	//outputFile.open("storage/users/" + name); //how to incorporate name as variable with the filestream
 	operatorMenu(name); //no need for declaration/data type when calling function
 }
 
@@ -165,39 +179,75 @@ void operatorMenu(string name)
 	switch (choice)
 	{//each menu parameter gives a menu with the 5 (10, considering A & B) level options for chosen operator
 	case 1:
-		levelMenu(name, '+'); //addition
+		levelMenu(name, '+', "addition"); //addition
 		break;
 	case 2:
-		levelMenu(name, '-'); //subtraction
+		levelMenu(name, '-', "subtraction"); //subtraction
 		break;
 	case 3:
-		levelMenu(name, '*'); // multiplication
+		levelMenu(name, '*', "multiplication"); // multiplication
 		break;
 	case 4:
-		levelMenu(name, '/'); // division
+		levelMenu(name, '/', "division"); // division
 		break;
 	case 5:
-		levelMenu(name, 'C'); // combination-- random display of all 4 operators
+		levelMenu(name, 'C', "combination"); // combination-- random display of all 4 operators
 	default:
 		cout << "Please enter a valid selection, 1-5."; // input needs to be 1 to 5
 	}
 }
 
-void levelMenu(string name, int mathType) //student name, mathType is operator option
+void levelMenu(string name, char mathType, string mathPath) //student name, mathType is operator option
 {
 	//int percentage; 
 	int level;
-	int levels[8]; // array!
-	levels[0] = 0;
+	const int TOTAL_LEVELS = 10;
+	int levels[TOTAL_LEVELS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // array!
+
 	cout << "Your unlocked levels: " << endl << endl;  //User sees only levels available to them (1 and those passed up to)
 	//need to cout unlocked levels
 	cin >> level; //chosen level
-	switch (level)
+	if (level > 0 && level <= TOTAL_LEVELS) {
+        quiz(mathType, levels[level - 1]);
+	    writeFile("storage/" + mathPath + "/" + name + ".txt", levels, TOTAL_LEVELS);
+	}
+	else
+	{
+		cout << "Please enter a valid option, 1-11" << endl; // error message, level out of bounds
+	}
+	/*switch (level)
 	{
 	case 1:
 		quiz(mathType, levels[0]);
 		break;
-	}
+	case 2:
+		quiz(mathType, levels[1]);
+		break;
+	case 3:
+		quiz(mathType, levels[2]);
+		break;
+	case 4:
+		quiz(mathType, levels[3]);
+		break;
+	case 5:
+		quiz(mathType, levels[4]);
+		break;
+	case 6:
+		quiz(mathType, levels[5]);
+		break;
+	case 7:
+		quiz(mathType, levels[6]);
+		break;
+	case 8:
+		quiz(mathType, levels[7]);
+		break;
+	case 9:
+		quiz(mathType, levels[8]);
+		break;
+	case 10:
+		quiz(mathType, levels[9]);
+		break;
+	}*/
 }
 
 void quiz(char mathType, int &score) //char mathType here because we are pulling in the paramenter from operatorMenu
@@ -281,15 +331,16 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 	inFile.open("storage/passing_percentage.txt"); //open percentage file
 	inFile >> percentage; //read in current passing percentage from file where it's stored
 	inFile.close();
-	if (correctCount * 10 >= percentage) //if percentage correct is at least the passing percentage stored in file...
+	score = correctCount * 10;
+	if (score >= percentage) //if percentage correct is at least the passing percentage stored in file...
 	{
 		//int percentage = readFile("storage/passing_percentage.txt"); //read in current passing percentage from file where it's stored
-		cout << "Your score is " << (correctCount * 10) << "%. " << " Congratulations, you are ready to move on to the next level!" << endl << endl;
+		cout << "Your score is " << score << "%. " << " Congratulations, you are ready to move on to the next level!" << endl << endl;
 		//displays total score
 	}
 	else
 	{ //if score is less than the passing percentage set by instructor
-		cout << "Your score is " << (correctCount * 10) << "%." << " Please see your teacher for some extra help." << endl << endl;
+		cout << "Your score is " << score << "%." << " Please see your teacher for some extra help." << endl << endl;
 	}
 }
 
