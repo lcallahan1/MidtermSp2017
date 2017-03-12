@@ -6,7 +6,8 @@
 #include <fstream>
 #include <cstdlib>//For RNG
 #include <ctime> //RNG  need to seed system time for "truly" random numbers
-#include <cmath> 
+#include <cmath> // for pow()
+#include <algorithm> // for max()
 //#include <iomanip>
 
 using namespace std;
@@ -18,9 +19,10 @@ void teacherSettings(); // Option to change the percentage required for passing.
 void writeFile(string filepath, string info); // function to write to file (used for percentage and scores)
 void writeFile(string filepath, int scores[], int length);
 string readFile(string filepath); // function to read info from file (same)
+void readScores(string filepath, int(&scores)[10]);
 void operatorMenu(string name); // Menu for which to choose the operator (+, -, *, / or combo), uses student name (string).
 void levelMenu(string name, char mathType, string mathPath);//Choose from available levels (1 plus any unlocked levels), uses student name and mathtyye from operator menu.
-void quiz(char mathType, int &score); // Runs math quiz of appropriate operator, level and saves score in name file.
+void quiz(int level, char mathType, int &score); // Runs math quiz of appropriate operator, level and saves score in name file.
 int randNum(int magnitude, bool negatives); //generates random number, proper number of digits and negative for B levels
 int randNum(int min, int max); //same function, diff parameters, uses same min and max from previous
 string crappyResponse(); // List of "wrong answer" responses, to display in random order.
@@ -132,15 +134,15 @@ void writeFile(string filepath, string info)
 	return;
 }
 
-void writeFile(string filepath, int scores[], int length)
+void writeFile(string filepath, int scores[], int length)// int scores stored in array, int length number of indexes
 {
 	ofstream outputFile;
 	outputFile.open(filepath);
-	for (int index = 0; index < length; index++)
+	for (int index = 0; index < length; index++) //initialize index, condition is < the number of indexes, and add one to index.
 	{
-		outputFile << scores[index] << endl;
+		outputFile << scores[index] << endl; // write scores to file, in appropriate index location (each in own row, 1 column)
 	}
-	outputFile.close();
+	outputFile.close(); 
 }
 
 string readFile(string filepath)
@@ -151,6 +153,23 @@ string readFile(string filepath)
 	inputFile >> info; //reading info from the file
 	inputFile.close();
 	return info;
+}
+
+void readScores(string filepath, int (&scores)[10]) //need to read best scores from student's file to diplay available levels
+{
+	ifstream inputFile;
+	inputFile.open(filepath);
+	//determine if existing
+	if (inputFile) {
+		for (int index = 0; index < 10; index++)
+		{
+			//read score from file
+			inputFile >> scores[index];
+		}
+	}
+
+	inputFile.close();
+	//return scores;
 }
 
 void studentMenu()
@@ -201,19 +220,22 @@ void levelMenu(string name, char mathType, string mathPath) //student name, math
 {
 	//int percentage; 
 	int level;
+	//int scores
 	const int TOTAL_LEVELS = 10;
-	int levels[TOTAL_LEVELS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // array!
+	int scores[TOTAL_LEVELS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // initializing array with 10 items
+	readScores("storage/" + mathPath + "/" + name + ".txt", scores);
 
 	cout << "Your unlocked levels: " << endl << endl;  //User sees only levels available to them (1 and those passed up to)
 	//need to cout unlocked levels
 	cin >> level; //chosen level
-	if (level > 0 && level <= TOTAL_LEVELS) {
-        quiz(mathType, levels[level - 1]);
-	    writeFile("storage/" + mathPath + "/" + name + ".txt", levels, TOTAL_LEVELS);
+	if (level > 0 && level <= TOTAL_LEVELS) //if level choice is 1-10
+	{
+        quiz(level, mathType, scores[level - 1]); //chosen operator with index location, example level 1 is [0] index.
+	    writeFile("storage/" + mathPath + "/" + name + ".txt", scores, TOTAL_LEVELS);
 	}
 	else
 	{
-		cout << "Please enter a valid option, 1-11" << endl; // error message, level out of bounds
+		cout << "Please enter a valid option, 1-11." << endl; // error message, level out of bounds
 	}
 	/*switch (level)
 	{
@@ -250,13 +272,11 @@ void levelMenu(string name, char mathType, string mathPath) //student name, math
 	}*/
 }
 
-void quiz(char mathType, int &score) //char mathType here because we are pulling in the paramenter from operatorMenu
+void quiz(int level, char mathType, int &score) //char mathType here because we are pulling in the paramenter from operatorMenu
 									 //passing scores in the array as a reference so the score stored in file is actually updated
 {
-	int level;
-	level = 1; //level to start at 1, not 0.
-	bool negatives; // for B levels
-	negatives = 0;
+	int magnitude = (level / 2) + (level % 2);
+	bool negatives = (level % 2 == 0); // for B levels
 	int answer; //answer == (num1 mathType num2);
 	int quotient; // need quotient and remainder so division can be calculated and entered "long" way instead of with a float (calculator way).
 	int remainder; // above
@@ -266,8 +286,8 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 	int percentage; //need to convert percentage from string (in file) to int for math
 	for (questions = 0; questions < 10; questions++) //display 10 questions each time quiz is started
 	{
-		int num1 = randNum(level, negatives); //calling randNum function with levels and sublevels parameters
-		int num2 = randNum(level, negatives);
+		int num1 = randNum(magnitude, negatives); //calling randNum function with levels and sublevels parameters
+		int num2 = randNum(magnitude, negatives);
 		cout << endl << num1 << " " << mathType << " " << num2 << "  =  "; //display equation and prompt for answer
 		switch (mathType)
 		{
@@ -331,24 +351,28 @@ void quiz(char mathType, int &score) //char mathType here because we are pulling
 	inFile.open("storage/passing_percentage.txt"); //open percentage file
 	inFile >> percentage; //read in current passing percentage from file where it's stored
 	inFile.close();
-	score = correctCount * 10;
+	int currentScore = correctCount * 10;
+	score = max(score, currentScore);
 	if (score >= percentage) //if percentage correct is at least the passing percentage stored in file...
 	{
 		//int percentage = readFile("storage/passing_percentage.txt"); //read in current passing percentage from file where it's stored
-		cout << "Your score is " << score << "%. " << " Congratulations, you are ready to move on to the next level!" << endl << endl;
+		cout << "Your score is " << currentScore << "%. " << " Congratulations, you are ready to move on to the next level!" << endl << endl;
 		//displays total score
 	}
 	else
 	{ //if score is less than the passing percentage set by instructor
-		cout << "Your score is " << score << "%." << " Please see your teacher for some extra help." << endl << endl;
+		cout << "Your score is " << currentScore << "%." << " Please see your teacher for some extra help." << endl << endl;
 	}
 }
 
 int randNum(int level, bool negatives)
 {
 	int magnitude = pow(10, level); //magnitude for multiple digits according to level
-	int num;
-	num = rand() % magnitude;
+	int num = rand() % magnitude;
+	if (negatives) {
+		num *= pow(-1, randNum(0, 9)); // using other randNum function [randNum(int min, int max)]
+	}
+
 	return num;
 }
 
@@ -403,20 +427,10 @@ string crappyResponse()
 	response = responses[index];
 	return response;
 }
-/*
-//array for level score keeping
-const int LEVELS = 8; //array size
-int scores[LEVELS]; //array has 8 elements
-ofstream outputFile;
-
-*/
 
 //******************************************
 //TO DO:
-// - negative numbers for B levels
-// - array to store scores and levels
 // - display available levels    
 // - option for mix of all operators
-// - determine if new user and create file, or read from existing
 // - system("CLS"); ***need to figure out where to clear screen
 //******************************************
