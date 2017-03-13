@@ -51,10 +51,12 @@ void studentTeacher() // Student, teacher or quit: main menu
 	{
 		cout << "Main Menu" << endl
 			<< "________________" << endl << endl
-			<< "\n1. I am an instructor." << endl
+			<< "1. I am an instructor." << endl
 			<< "2. I am a student." << endl
 			<< "3. Quit." << endl << endl;
 		cin >> choice;
+		system("CLS"); //no need for prototype because it's in std library!
+
 		switch (choice)
 		{
 		case 1:
@@ -77,6 +79,7 @@ void teacherMenu(int attempts)
 	string password;
 	cout << "Please enter your (case-sensitive) password, please: " << endl;
 	cin >> password;
+	system("CLS");
 	if (password == "pass") //password correct; == tests equality
 	{
 		teacherSettings(); //if password is correct, to teacher settings menu
@@ -105,6 +108,8 @@ void teacherSettings()//instructor settings
 	cout << "Please choose an option from the following:" << endl << endl;
 	cout << "1. Set passing %" << endl; //currently only only option
 	cin >> choice;
+	system("CLS");
+
 	switch (choice)
 	{
 	case 1:
@@ -112,12 +117,16 @@ void teacherSettings()//instructor settings
 	}
 	if (choice == 1) // If they wish to change the percentage required to pass...
 	{
-		string percentage = readFile("storage/passing_percentage.txt");//read in percentage from file where it's stored as a string only
+		string percentage = readFile("storage/passing_percentage.txt");//read in percentage from file where it's stored
 		cout << "The current percentage is " << percentage << "%, to what would you like to change the passing percentage?" << endl;
 		cin >> percentage; //new percentage
-		cout << "The new percentage required to pass a level is " << percentage << "%." << endl; //display new percentage
+		system("CLS");
+		cout << "The new percentage required to pass a level is " << percentage << "%.  Please press \"ENTER\" to continue." << endl; //display new percentage
+		system("pause"); //to press enter
 		writeFile("storage/passing_percentage.txt", percentage);  //output new percentage, i.e. write to passing_percentage file
+		system("CLS");
 	}
+	
 }
 
 //******************
@@ -155,7 +164,7 @@ string readFile(string filepath)
 	return info;
 }
 
-void readScores(string filepath, int (&scores)[10]) //need to read best scores from student's file to diplay available levels
+void readScores(string filepath, int (&scores)[10]) //need to read scores from student's file to diplay available levels
 {
 	ifstream inputFile;
 	inputFile.open(filepath);
@@ -169,25 +178,24 @@ void readScores(string filepath, int (&scores)[10]) //need to read best scores f
 	}
 
 	inputFile.close();
-	//return scores;
 }
 
 void studentMenu()
 {
-	//ofstream outputFile;
 
 	string name;
-	cout << "Please enter your name with no spaces and all lowercase [first_last]: " << endl;
+	cout << "Hello! Welcome to MathWiz! Please enter your name with no spaces and all lowercase [first_last]: " << endl;
 	cin >> name;
-	//outputFile.open("storage/users/" + name); //how to incorporate name as variable with the filestream
-	operatorMenu(name); //no need for declaration/data type when calling function
+	system("CLS"); //terminal command
+	cout << "Great, let's get started!" << endl << endl;
+	operatorMenu(name); 
 }
 
 void operatorMenu(string name)
 {
 	int choice; //options 1-5 (easier than char or string, consistancy)
 	cout << "Student Menu" << endl
-		<< "______________" << endl << endl
+		<< "--------------" << endl << endl
 		<< "Please enter an option from the following: " << endl << endl
 		<< "1. Addition (levels 1-5)" << endl
 		<< "2. Subtraction (levels 1-5)" << endl
@@ -195,97 +203,91 @@ void operatorMenu(string name)
 		<< "4. Division (levels 1-5)" << endl
 		<< "5. Combination of all operators (levels 1-5)" << endl << endl;
 	cin >> choice;
+	system("CLS");
 	switch (choice)
 	{//each menu parameter gives a menu with the 5 (10, considering A & B) level options for chosen operator
 	case 1:
-		levelMenu(name, '+', "addition"); //addition
+		levelMenu(name, '+', "addition"); // need (+, -, *, /) symbol to use during quiz *and* string name for filepath to save scores.
 		break;
 	case 2:
-		levelMenu(name, '-', "subtraction"); //subtraction
+		levelMenu(name, '-', "subtraction"); 
 		break;
 	case 3:
-		levelMenu(name, '*', "multiplication"); // multiplication
+		levelMenu(name, '*', "multiplication");
 		break;
 	case 4:
-		levelMenu(name, '/', "division"); // division
+		levelMenu(name, '/', "division");
 		break;
 	case 5:
 		levelMenu(name, 'C', "combination"); // combination-- random display of all 4 operators
+		break;
 	default:
-		cout << "Please enter a valid selection, 1-5."; // input needs to be 1 to 5
+		cout << "Please enter a valid selection, 1-5."; // input needs to be 1 - 5
 	}
 }
 
-void levelMenu(string name, char mathType, string mathPath) //student name, mathType is operator option
+void levelMenu(string name, char mathType, string mathPath) //student name, mathType is operator option, mathPath is operator name for file
 {
-	//int percentage; 
+	ifstream inFile;
 	int level;
-	//int scores
+	int percentage;
+	inFile.open("storage/passing_percentage.txt"); //open percentage file
+	inFile >> percentage; //read in current passing percentage from file where it's stored
+	inFile.close();
 	const int TOTAL_LEVELS = 10;
-	int scores[TOTAL_LEVELS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // initializing array with 10 items
-	readScores("storage/" + mathPath + "/" + name + ".txt", scores);
+	int scores[TOTAL_LEVELS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // initializing array with 10 items, so 0's are in each array space in the file initially.
+	readScores("storage/" + mathPath + "/" + name + ".txt", scores); //parameter is filepath to operater folder, and then to student's name
 
-	cout << "Your unlocked levels: " << endl << endl;  //User sees only levels available to them (1 and those passed up to)
+	cout << "Your unlocked levels: " << endl << endl;  //User sees only levels available to them (1 and those passed up to).
 	//need to cout unlocked levels
-	cin >> level; //chosen level
-	if (level > 0 && level <= TOTAL_LEVELS) //if level choice is 1-10
+	int indexCounter = 0;
+
+	do
 	{
-        quiz(level, mathType, scores[level - 1]); //chosen operator with index location, example level 1 is [0] index.
+		cout << indexCounter + 1 << ".  Level " << indexCounter + 1 << "!  (your best score: " << scores[indexCounter] << "%)" << endl;
+	} while ((scores[indexCounter++] >= percentage) && (indexCounter < 10));
+	
+	cin >> level; //chosen level
+	system("CLS");
+	if (level > 0 && level < indexCounter) //if level choice is within 1 and passed into levels
+	{
+        quiz(level, mathType, scores[level - 1]); //chosen operator with index location (example: level 1 is [0] index).
 	    writeFile("storage/" + mathPath + "/" + name + ".txt", scores, TOTAL_LEVELS);
 	}
 	else
 	{
-		cout << "Please enter a valid option, 1-11." << endl; // error message, level out of bounds
+		cout << "Invalid selection." << endl; // error message, level out of bounds
 	}
-	/*switch (level)
-	{
-	case 1:
-		quiz(mathType, levels[0]);
-		break;
-	case 2:
-		quiz(mathType, levels[1]);
-		break;
-	case 3:
-		quiz(mathType, levels[2]);
-		break;
-	case 4:
-		quiz(mathType, levels[3]);
-		break;
-	case 5:
-		quiz(mathType, levels[4]);
-		break;
-	case 6:
-		quiz(mathType, levels[5]);
-		break;
-	case 7:
-		quiz(mathType, levels[6]);
-		break;
-	case 8:
-		quiz(mathType, levels[7]);
-		break;
-	case 9:
-		quiz(mathType, levels[8]);
-		break;
-	case 10:
-		quiz(mathType, levels[9]);
-		break;
-	}*/
 }
 
 void quiz(int level, char mathType, int &score) //char mathType here because we are pulling in the paramenter from operatorMenu
 									 //passing scores in the array as a reference so the score stored in file is actually updated
 {
-	int magnitude = (level / 2) + (level % 2);
-	bool negatives = (level % 2 == 0); // for B levels
-	int answer; //answer == (num1 mathType num2);
+	//Pattern here--to have the same magnitude for levels 1&2 (1A & 1B), 3&4 (2A & 2B), etc....
+	//I'm dividing the level number by 2 and adding that to level mod 2 to result in a magnitude of 1 for level 1&2, 2 for 3&4, etc..
+	int magnitude = (level / 2) + (level % 2); // ^^
+	bool negatives = (level % 2 == 0); // B levels are all even (2, 4, 6, 8, 10), so if even, allow negative numbers.
+	int answer; //answer entered by student
 	int quotient; // need quotient and remainder so division can be calculated and entered "long" way instead of with a float (calculator way).
 	int remainder; // above
-	int questions;
-	int correctCount = 0; //initiating correct question count at 0
-	ifstream inFile;
+	int questions; //10 questions total
+	int correctCount = 0; //initiating correct question count at 0, when student's answer is correct
+	ifstream inFile; //to pull in passing percentage from file
 	int percentage; //need to convert percentage from string (in file) to int for math
+	const int TOTAL_MATH_TYPES = 4;
+	char mathTypes[TOTAL_MATH_TYPES] = { '+', '-', '*', '/' };
+	bool randomizeMathType = false;
+	if (mathType == 'C') 
+	{
+		randomizeMathType = true;
+	}
 	for (questions = 0; questions < 10; questions++) //display 10 questions each time quiz is started
 	{
+		if (randomizeMathType)//re-assigning mathType if it is 'C'
+		{
+			int index = randNum(0, 3);
+			mathType = mathTypes[index]; //index varies 0-3
+		}
 		int num1 = randNum(magnitude, negatives); //calling randNum function with levels and sublevels parameters
 		int num2 = randNum(magnitude, negatives);
 		cout << endl << num1 << " " << mathType << " " << num2 << "  =  "; //display equation and prompt for answer
@@ -341,11 +343,6 @@ void quiz(int level, char mathType, int &score) //char mathType here because we 
 				//displays correct answer, broken up with quotient and remainder
 				<< crappyResponse() << endl << endl;
 			break;
-		case 'C': //combination of all 4 operators
-			//cin >> answer
-			//how to randomize this?
-			//how to deal with quotients again?
-			break;
 		}
 	}
 	inFile.open("storage/passing_percentage.txt"); //open percentage file
@@ -363,6 +360,8 @@ void quiz(int level, char mathType, int &score) //char mathType here because we 
 	{ //if score is less than the passing percentage set by instructor
 		cout << "Your score is " << currentScore << "%." << " Please see your teacher for some extra help." << endl << endl;
 	}
+	system("pause"); //wait for key press to clear screen
+	system("CLS"); //clear screen after they hit any key
 }
 
 int randNum(int level, bool negatives)
@@ -420,17 +419,10 @@ string crappyResponse()
 	responses[5] = "False!";
 	responses[6] = "Sorry, that's incorrect.";
 	responses[7] = "Scat!";
-	responses[8] = "Oh, no!";
-	responses[9] = "Whoops! Keep trying.";
+	responses[8] = "Blast!";
+	responses[9] = "Whoops! Keep trying!";
 	//generate an index for array
 	int index = randNum(MIN_SIZE, MAX_SIZE);  //initializing index for array
 	response = responses[index];
 	return response;
 }
-
-//******************************************
-//TO DO:
-// - display available levels    
-// - option for mix of all operators
-// - system("CLS"); ***need to figure out where to clear screen
-//******************************************
