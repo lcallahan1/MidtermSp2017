@@ -1,14 +1,13 @@
-// CS135 Project #1
-// Math pratice for basic levels
+// CS135 Project #1 (midterm)
+// Math pratice for elementary school students.
 
 #include <iostream>
-#include <string>
-#include <fstream>
+#include <string> 
+#include <fstream> //for file read and write
 #include <cstdlib>//For RNG
 #include <ctime> //RNG  need to seed system time for "truly" random numbers
 #include <cmath> // for pow()
 #include <algorithm> // for max()
-//#include <iomanip>
 
 using namespace std;
 
@@ -17,14 +16,15 @@ void teacherMenu(int attempts); // If teacher, user is prompted for password (ma
 void studentMenu(); // Prompts student for name, to access file for scores and such.
 void teacherSettings(); // Option to change the percentage required for passing.
 void writeFile(string filepath, string info); // function to write to file (used for percentage and scores)
-void writeFile(string filepath, int scores[], int length);
-string readFile(string filepath); // function to read info from file (same)
-void readScores(string filepath, int(&scores)[10]);
+void writeFile(string filepath, int scores[], int length); // int scores stored in array, int length number of indexes
+string readFile(string filepath); // function to read info from file 
+void readScores(string filepath, int(&scores)[10]); //need to read scores from student's file to diplay available levels
 void operatorMenu(string name); // Menu for which to choose the operator (+, -, *, / or combo), uses student name (string).
-void levelMenu(string name, char mathType, string mathPath);//Choose from available levels (1 plus any unlocked levels), uses student name and mathtyye from operator menu.
+//Choose from available levels (1 plus any unlocked levels), uses student name and mathtyye from operator menu.
+void levelMenu(string name, char mathType, string mathPath);
 void quiz(int level, char mathType, int &score); // Runs math quiz of appropriate operator, level and saves score in name file.
-int randNum(int magnitude, bool negatives); //generates random number, proper number of digits and negative for B levels
-int randNum(int min, int max); //same function, diff parameters, uses same min and max from previous
+int randNum(int magnitude, bool negatives); //Generates random number, with proper number of digits for level and negative numbers for B levels.
+int randNum(int min, int max); //Same function name, diff parameters, uses same min and max from previous (so different function).
 string crappyResponse(); // List of "wrong answer" responses, to display in random order.
 string happyResponse(); // List of "correct answer" responses, to display in random order.
 
@@ -41,7 +41,8 @@ int main()
 	return 0;
 }
 
-void studentTeacher() // Student, teacher or quit: main menu
+// Student, teacher or quit: main menu
+void studentTeacher() 
 {
 	const int INITIAL_ATTEMPT = 1; //initialization
 
@@ -55,7 +56,7 @@ void studentTeacher() // Student, teacher or quit: main menu
 			<< "2. I am a student." << endl
 			<< "3. Quit." << endl << endl;
 		cin >> choice;
-		system("CLS"); //no need for prototype because it's in std library!
+		system("CLS"); //no need for prototype because it's in std library (yay)!
 
 		switch (choice)
 		{
@@ -73,8 +74,8 @@ void studentTeacher() // Student, teacher or quit: main menu
 		}
 	}
 }
-
-void teacherMenu(int attempts)
+// If teacher, user is prompted for password (max 3 attempts) and sent to teacherSettings.
+void teacherMenu(int attempts) 
 {
 	string password;
 	cout << "Please enter your (case-sensitive) password, please: " << endl;
@@ -98,8 +99,8 @@ void teacherMenu(int attempts)
 		return;
 	}
 }
-
-void teacherSettings()//instructor settings
+// Option to change the percentage required for passing.
+void teacherSettings()
 {
 	int choice;
 	int percentage = 0;
@@ -133,8 +134,8 @@ void teacherSettings()//instructor settings
 // FILE I/O
 //******************
 
-
-void writeFile(string filepath, string info)
+// function to write to file (used for percentage and scores)
+void writeFile(string filepath, string info) 
 {
 	ofstream outputFile; //declare 
 	outputFile.open(filepath);//parameter is filepath variable
@@ -142,8 +143,8 @@ void writeFile(string filepath, string info)
 	outputFile.close(); //close file
 	return;
 }
-
-void writeFile(string filepath, int scores[], int length)// int scores stored in array, int length number of indexes
+// int scores stored in array, int length number of indexes
+void writeFile(string filepath, int scores[], int length)
 {
 	ofstream outputFile;
 	outputFile.open(filepath);
@@ -153,8 +154,8 @@ void writeFile(string filepath, int scores[], int length)// int scores stored in
 	}
 	outputFile.close(); 
 }
-
-string readFile(string filepath)
+// function to read info from file
+string readFile(string filepath)  
 {
 	ifstream inputFile; //declare
 	string info; //file info is stored as a string (always)
@@ -163,8 +164,8 @@ string readFile(string filepath)
 	inputFile.close();
 	return info;
 }
-
-void readScores(string filepath, int (&scores)[10]) //need to read scores from student's file to diplay available levels
+//need to read scores from student's file to diplay available levels
+void readScores(string filepath, int (&scores)[10]) 
 {
 	ifstream inputFile;
 	inputFile.open(filepath);
@@ -179,7 +180,7 @@ void readScores(string filepath, int (&scores)[10]) //need to read scores from s
 
 	inputFile.close();
 }
-
+// Prompts student for name, to access file for scores and such.
 void studentMenu()
 {
 
@@ -190,7 +191,7 @@ void studentMenu()
 	cout << "Great, let's get started!" << endl << endl;
 	operatorMenu(name); 
 }
-
+// Menu for which to choose the operator (+, -, *, / or combo), uses student name (string).
 void operatorMenu(string name)
 {
 	int choice; //options 1-5 (easier than char or string, consistancy)
@@ -225,8 +226,9 @@ void operatorMenu(string name)
 		cout << "Please enter a valid selection, 1-5."; // input needs to be 1 - 5
 	}
 }
-
-void levelMenu(string name, char mathType, string mathPath) //student name, mathType is operator option, mathPath is operator name for file
+//Choose from available levels (1 plus any unlocked levels), uses student name and mathtype from operator menu.
+//Student name, mathType is operator option, mathPath is operator name for file.
+void levelMenu(string name, char mathType, string mathPath)
 {
 	ifstream inFile;
 	int level;
@@ -259,16 +261,17 @@ void levelMenu(string name, char mathType, string mathPath) //student name, math
 		cout << "Invalid selection." << endl; // error message, level out of bounds
 	}
 }
-
-void quiz(int level, char mathType, int &score) //char mathType here because we are pulling in the paramenter from operatorMenu
-									 //passing scores in the array as a reference so the score stored in file is actually updated
+// Runs math quiz of appropriate operator, level and saves score in name file.
+//Char mathType here because we are pulling in the paramenter from operatorMenu, and
+//passing scores in the array as a reference so the score stored in file is actually updated.
+void quiz(int level, char mathType, int &score) 			 
 {
 	//Pattern here--to have the same magnitude for levels 1&2 (1A & 1B), 3&4 (2A & 2B), etc....
 	//I'm dividing the level number by 2 and adding that to level mod 2 to result in a magnitude of 1 for level 1&2, 2 for 3&4, etc..
 	int magnitude = (level / 2) + (level % 2); // ^^
-	bool negatives = (level % 2 == 0); // B levels are all even (2, 4, 6, 8, 10), so if even, allow negative numbers.
+	bool negatives = (level % 2 == 0); // B levels are all even (2, 4, 6, 8, 10), so if even, allow negative numbers
 	int answer; //answer entered by student
-	int quotient; // need quotient and remainder so division can be calculated and entered "long" way instead of with a float (calculator way).
+	int quotient; // need quotient and remainder so division can be calculated and entered "long" way instead of with a float (calculator way)
 	int remainder; // above
 	int questions; //10 questions total
 	int correctCount = 0; //initiating correct question count at 0, when student's answer is correct
@@ -298,11 +301,11 @@ void quiz(int level, char mathType, int &score) //char mathType here because we 
 			if (answer == (num1 + num2)) //if correct
 			{
 				correctCount++; //add 1 to correct question count to determine quiz score
-				cout << happyResponse() << endl << endl; //display congradulatory response, call function which randomates list of responses.
+				cout << happyResponse() << endl << endl; //display congradulatory response, call function which randomates list of responses
 			}
 			else // or incorrect (could probably do this outside switch statement, but this is easier for division)
 				cout << "Incorrect. The answer is " << (num1 + num2) << "." << endl //shows correct answer right away
-				<< crappyResponse() << endl << endl; //display response, call function which randomates list of "wrong" responses.
+				<< crappyResponse() << endl << endl; //display response, call function which randomates list of "wrong" responses
 			break;
 		case '-':
 			cin >> answer;
@@ -328,7 +331,7 @@ void quiz(int level, char mathType, int &score) //char mathType here because we 
 			break;
 		case '/':
 			if (num2 == 0) //cannot divide by zero, so if denominator is 0
-				num2 += 1; // add one to the denominator so it is no longer 0.
+				num2 += 1; // add one to the denominator so it is no longer 0
 			cout << "please enter quotient (without remainder):  ";
 			cin >> quotient;
 			cout << "and remainder:  ";
@@ -352,9 +355,8 @@ void quiz(int level, char mathType, int &score) //char mathType here because we 
 	score = max(score, currentScore);
 	if (score >= percentage) //if percentage correct is at least the passing percentage stored in file...
 	{
-		//int percentage = readFile("storage/passing_percentage.txt"); //read in current passing percentage from file where it's stored
-		cout << "Your score is " << currentScore << "%. " << " Congratulations, you are ready to move on to the next level!" << endl << endl;
 		//displays total score
+		cout << "Your score is " << currentScore << "%. " << " Congratulations, you are ready to move on to the next level!" << endl << endl;
 	}
 	else
 	{ //if score is less than the passing percentage set by instructor
@@ -363,26 +365,26 @@ void quiz(int level, char mathType, int &score) //char mathType here because we 
 	system("pause"); //wait for key press to clear screen
 	system("CLS"); //clear screen after they hit any key
 }
-
+//Generates random number, with proper number of digits for level and negative numbers for B levels.
 int randNum(int level, bool negatives)
 {
 	int magnitude = pow(10, level); //magnitude for multiple digits according to level
 	int num = rand() % magnitude;
-	if (negatives) {
+	if (negatives) 
+	{
 		num *= pow(-1, randNum(0, 9)); // using other randNum function [randNum(int min, int max)]
 	}
 
 	return num;
 }
-
+//Same function name, diff parameters, uses same min and max from previous randNum function (so different function).
 int randNum(int min, int max)
 { // integer between 0 and 9
 	int x = (rand() % (max - min + 1)) + min;
 	return x;
 }
-
+// List of "correct answer" responses, to display in random order.
 string happyResponse()
-//generate random response
 {
 	//srand seed up top in int main function
 	const int MIN_SIZE = 0;
@@ -404,7 +406,7 @@ string happyResponse()
 	response = responses[index];
 	return response; // return randomly generated response to quiz function
 }
-
+//List of "wrong answer" responses, to display in random order.
 string crappyResponse()
 {
 	const int MIN_SIZE = 0;
