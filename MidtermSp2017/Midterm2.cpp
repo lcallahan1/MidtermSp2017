@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string> 
-#include <fstream> //for file read and write
+#include <fstream> // for file read and write
 #include <cstdlib>//For RNG
 #include <ctime> //RNG  need to seed system time for "truly" random numbers
 #include <cmath> // for pow()
@@ -37,10 +37,10 @@ void quiz(int level, char mathType, int &score);
 int randNum(int magnitude, bool negatives); 
 //Same function name, diff parameters, uses same min and max from previous (so different function).
 int randNum(int min, int max); 
-string crappyResponse(); // List of "wrong answer" responses, to display in random order.
-string happyResponse(); // List of "correct answer" responses, to display in random order.
-
-
+// List of "wrong answer" responses, to display in random order.
+string crappyResponse(); 
+// List of "correct answer" responses, to display in random order.
+string happyResponse(); 
 
 //main only used to initiate the first menu function and to seed RNG
 int main()
@@ -57,7 +57,6 @@ int main()
 void studentTeacher() 
 {
 	const int INITIAL_ATTEMPT = 1; //initialization
-
 	int choice;
 	bool quit = false;
 	while (!quit)  //bool shortcut allows us to not need quit == false, b/c bool (quit varible is a bool, expecting a bool in () )
@@ -100,8 +99,8 @@ void teacherMenu(int attempts)
 	else
 	{
 		if (attempts >= 3)// Given a max of 3 tries
-		{
-			cout << "Sorry, that password is wrong." << endl; //return to studentTeacher menu if pass wrong 3 times
+		{//return to studentTeacher menu if pass wrong 3 times
+			cout << "Sorry, that password is wrong." << endl; 
 			return;
 		}
 		else
@@ -119,7 +118,7 @@ void teacherSettings()
 	cout << "Instructor Settings Menu" << endl
 		<< "__________________________" << endl << endl;
 	cout << "Please choose an option from the following:" << endl << endl;
-	cout << "1. Set passing %" << endl; //currently only only option
+	cout << "1. Set passing %" << endl; //currently only option
 	cin >> choice;
 	system("CLS");
 
@@ -139,13 +138,11 @@ void teacherSettings()
 		writeFile("storage/passing_percentage.txt", percentage);  //output new percentage, i.e. write to passing_percentage file
 		system("CLS");
 	}
-	
 }
 
 //******************
 // FILE I/O
 //******************
-
 // function to write to file (used for percentage and scores)
 void writeFile(string filepath, string info) 
 {
@@ -182,7 +179,8 @@ void readScores(string filepath, int (&scores)[10])
 	ifstream inputFile;
 	inputFile.open(filepath);
 	//determine if existing
-	if (inputFile) {
+	if (inputFile) 
+	{
 		for (int index = 0; index < 10; index++)
 		{
 			//read score from file
@@ -195,7 +193,6 @@ void readScores(string filepath, int (&scores)[10])
 // Prompts student for name, to access file for scores and such.
 void studentMenu()
 {
-
 	string name;
 	cout << "Hello! Welcome to MathWiz! Please enter your name with no spaces and all lowercase [first_last]: " << endl;
 	cin >> name;
@@ -219,7 +216,8 @@ void operatorMenu(string name)
 	switch (choice)
 	{//each menu parameter gives a menu with the 5 (10, considering A & B) level options for chosen operator
 	case 1:
-		levelMenu(name, '+', "addition"); // need (+, -, *, /) symbol to use during quiz *and* string name for filepath to save scores.
+		// need (+, -, *, /) symbol to use during quiz *and* string name for filepath to save scores.
+		levelMenu(name, '+', "addition"); 
 		break;
 	case 2:
 		levelMenu(name, '-', "subtraction"); 
@@ -234,7 +232,7 @@ void operatorMenu(string name)
 		levelMenu(name, 'C', "combination"); // combination-- random display of all 4 operators
 		break;
 	default:
-		cout << "Please enter a valid selection, 1-5."; // input needs to be 1 - 5
+		cout << "Please enter a valid selection, 1-5.\n\n"; // input needs to be 1 - 5
 	}
 }
 //Choose from available levels (1 plus any unlocked levels), uses student name and mathtype from operator menu.
@@ -248,10 +246,12 @@ void levelMenu(string name, char mathType, string mathPath)
 	inFile >> percentage; //read in current passing percentage from file where it's stored
 	inFile.close();
 	const int TOTAL_LEVELS = 10;
-	int scores[TOTAL_LEVELS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // initializing array with 10 items, so 0's are in each array space in the file initially.
-	readScores("storage/" + mathPath + "/" + name + ".txt", scores); //parameter is filepath to operater folder, and then to student's name
-
-	cout << "Your unlocked levels: " << endl << endl;  //User sees only levels available to them (1 and those passed up to).
+	// initializing array with 10 items, so 0's are in each array space in the file initially.
+	int scores[TOTAL_LEVELS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; 
+	//parameter is filepath to operater folder, and then to student's name
+	readScores("storage/" + mathPath + "/" + name + ".txt", scores); 
+	//User sees only levels available to them (1 and those passed up to).
+	cout << "Your unlocked levels: " << endl << endl;  
 	int indexCounter = 0;
 
 	do
@@ -261,8 +261,8 @@ void levelMenu(string name, char mathType, string mathPath)
 	
 	cin >> level; //chosen level
 	if (level > 0 && level <= indexCounter) //if level choice is within 1 and passed into levels
-	{
-        quiz(level, mathType, scores[level - 1]); //chosen operator with index location (example: level 1 is [0] index).
+	{//chosen operator with index location (example: level 1 is [0] index).
+        quiz(level, mathType, scores[level - 1]); 
 	    writeFile("storage/" + mathPath + "/" + name + ".txt", scores, TOTAL_LEVELS);
 	}
 	else
@@ -276,7 +276,8 @@ void levelMenu(string name, char mathType, string mathPath)
 void quiz(int level, char mathType, int &score) 			 
 {
 	//Pattern here--to have the same magnitude for levels 1&2 (1A & 1B), 3&4 (2A & 2B), etc....
-	//I'm dividing the level number by 2 and adding that to level mod 2 to result in a magnitude of 1 for level 1&2, 2 for 3&4, etc..
+	//I'm dividing the level number by 2 and adding that to level mod 2 to result in a magnitude 
+	//of 1 for level 1&2, 2 for 3&4, etc..
 	int magnitude = (level / 2) + (level % 2); // ^^
 	bool negatives = (level % 2 == 0); // B levels are all even (2, 4, 6, 8, 10), so if even, allow negative numbers
 	int answer; //answer entered by student
@@ -389,7 +390,6 @@ int randNum(int level, bool negatives)
 	{
 		num *= pow(-1, randNum(0, 9)); // using other randNum function [randNum(int min, int max)]
 	}
-
 	return num;
 }
 //Same function name, diff parameters, uses same min and max from previous randNum function (so different function).
