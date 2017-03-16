@@ -1,5 +1,5 @@
 // CS135 Project #1 (midterm)
-// Math pratice for elementary school students.
+// "Math Games" Math pratice for elementary school students.
 
 #include <iostream>
 #include <string> 
@@ -11,20 +11,32 @@
 
 using namespace std;
 
-void studentTeacher(); //The "main menu", user chooses to continue as "student" or "teacher".
-void teacherMenu(int attempts); // If teacher, user is prompted for password (max 3 attempts) and sent to teacherSettings.
-void studentMenu(); // Prompts student for name, to access file for scores and such.
-void teacherSettings(); // Option to change the percentage required for passing.
-void writeFile(string filepath, string info); // function to write to file (used for percentage and scores)
-void writeFile(string filepath, int scores[], int length); // int scores stored in array, int length number of indexes
-string readFile(string filepath); // function to read info from file 
-void readScores(string filepath, int(&scores)[10]); //need to read scores from student's file to diplay available levels
-void operatorMenu(string name); // Menu for which to choose the operator (+, -, *, / or combo), uses student name (string).
+//The "main menu", user chooses to continue as "student" or "teacher".
+void studentTeacher();
+// If teacher, user is prompted for password (max 3 attempts) and sent to teacherSettings.
+void teacherMenu(int attempts); 
+// Prompts student for name, to access file for scores and such.
+void studentMenu(); 
+// Option to change the percentage required for passing.
+void teacherSettings(); 
+// function to write to file (used for percentage and scores)
+void writeFile(string filepath, string info); 
+// int scores stored in array, int length number of indexes
+void writeFile(string filepath, int scores[], int length); 
+// function to read info from file 
+string readFile(string filepath); 
+//need to read scores from student's file to diplay available levels
+void readScores(string filepath, int(&scores)[10]); 
+// Menu for which to choose the operator (+, -, *, / or combo), uses student name (string).
+void operatorMenu(string name); 
 //Choose from available levels (1 plus any unlocked levels), uses student name and mathtyye from operator menu.
 void levelMenu(string name, char mathType, string mathPath);
-void quiz(int level, char mathType, int &score); // Runs math quiz of appropriate operator, level and saves score in name file.
-int randNum(int magnitude, bool negatives); //Generates random number, with proper number of digits for level and negative numbers for B levels.
-int randNum(int min, int max); //Same function name, diff parameters, uses same min and max from previous (so different function).
+// Runs math quiz of appropriate operator, level and saves score in name file.
+void quiz(int level, char mathType, int &score); 
+//Generates random number, with proper number of digits for level and negative numbers for B levels.
+int randNum(int magnitude, bool negatives); 
+//Same function name, diff parameters, uses same min and max from previous (so different function).
+int randNum(int min, int max); 
 string crappyResponse(); // List of "wrong answer" responses, to display in random order.
 string happyResponse(); // List of "correct answer" responses, to display in random order.
 
@@ -204,7 +216,6 @@ void operatorMenu(string name)
 		<< "4. Division (levels 1-5)" << endl
 		<< "5. Combination of all operators (levels 1-5)" << endl << endl;
 	cin >> choice;
-	system("CLS");
 	switch (choice)
 	{//each menu parameter gives a menu with the 5 (10, considering A & B) level options for chosen operator
 	case 1:
@@ -241,7 +252,6 @@ void levelMenu(string name, char mathType, string mathPath)
 	readScores("storage/" + mathPath + "/" + name + ".txt", scores); //parameter is filepath to operater folder, and then to student's name
 
 	cout << "Your unlocked levels: " << endl << endl;  //User sees only levels available to them (1 and those passed up to).
-	//need to cout unlocked levels
 	int indexCounter = 0;
 
 	do
@@ -250,8 +260,7 @@ void levelMenu(string name, char mathType, string mathPath)
 	} while ((scores[indexCounter++] >= percentage) && (indexCounter < 10));
 	
 	cin >> level; //chosen level
-	system("CLS");
-	if (level > 0 && level < indexCounter) //if level choice is within 1 and passed into levels
+	if (level > 0 && level <= indexCounter) //if level choice is within 1 and passed into levels
 	{
         quiz(level, mathType, scores[level - 1]); //chosen operator with index location (example: level 1 is [0] index).
 	    writeFile("storage/" + mathPath + "/" + name + ".txt", scores, TOTAL_LEVELS);
@@ -261,7 +270,7 @@ void levelMenu(string name, char mathType, string mathPath)
 		cout << "Invalid selection." << endl; // error message, level out of bounds
 	}
 }
-// Runs math quiz of appropriate operator, level and saves score in name file.
+//Runs math quiz of appropriate operator, level and saves score in name file.
 //Char mathType here because we are pulling in the paramenter from operatorMenu, and
 //passing scores in the array as a reference so the score stored in file is actually updated.
 void quiz(int level, char mathType, int &score) 			 
@@ -293,6 +302,12 @@ void quiz(int level, char mathType, int &score)
 		}
 		int num1 = randNum(magnitude, negatives); //calling randNum function with levels and sublevels parameters
 		int num2 = randNum(magnitude, negatives);
+		if (mathType == '/' && num2 == 0) // For divison, if denominator is 0, add 1 to denominator
+										  // so that we don't try and divide by 0. 
+		{
+			num2 += 1;
+		}
+		
 		cout << endl << num1 << " " << mathType << " " << num2 << "  =  "; //display equation and prompt for answer
 		switch (mathType)
 		{
@@ -330,8 +345,8 @@ void quiz(int level, char mathType, int &score)
 				<< crappyResponse() << endl << endl;
 			break;
 		case '/':
-			if (num2 == 0) //cannot divide by zero, so if denominator is 0
-				num2 += 1; // add one to the denominator so it is no longer 0
+			//if (num2 == 0) //cannot divide by zero, so if denominator is 0
+				//num2 += 1; // add one to the denominator so it is no longer 0
 			cout << "please enter quotient (without remainder):  ";
 			cin >> quotient;
 			cout << "and remainder:  ";
@@ -353,7 +368,7 @@ void quiz(int level, char mathType, int &score)
 	inFile.close();
 	int currentScore = correctCount * 10;
 	score = max(score, currentScore);
-	if (score >= percentage) //if percentage correct is at least the passing percentage stored in file...
+	if (currentScore >= percentage) //if percentage correct is at least the passing percentage stored in file...
 	{
 		//displays total score
 		cout << "Your score is " << currentScore << "%. " << " Congratulations, you are ready to move on to the next level!" << endl << endl;
