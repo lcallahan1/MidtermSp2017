@@ -207,11 +207,11 @@ void operatorMenu(string name)
 	cout << "Student Menu" << endl
 		<< "--------------" << endl << endl
 		<< "Please enter an option from the following: " << endl << endl
-		<< "1. Addition (levels 1-5)" << endl
-		<< "2. Subtraction (levels 1-5)" << endl
-		<< "3. Multiplication (levels 1-5)" << endl
-		<< "4. Division (levels 1-5)" << endl
-		<< "5. Combination of all operators (levels 1-5)" << endl << endl;
+		<< "1. Addition" << endl
+		<< "2. Subtraction" << endl
+		<< "3. Multiplication" << endl
+		<< "4. Division" << endl
+		<< "5. Combination of all operators" << endl << endl;
 	cin >> choice;
 	switch (choice)
 	{//each menu parameter gives a menu with the 5 (10, considering A & B) level options for chosen operator
